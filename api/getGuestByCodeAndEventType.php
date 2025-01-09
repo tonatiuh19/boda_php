@@ -29,7 +29,7 @@ if ($method == 'POST') {
         $guest_code = $params['guest_code'];
 
         // Main query to fetch guest details
-        $sql_guest = "SELECT a.id_guest, a.full_name, a.email, a.phone, a.guest_code, a.event_type, a.guest_type, a.guest_note, a.guest_extras, a.confirmation, a.photo, a.title
+        $sql_guest = "SELECT a.id_guest, a.full_name, a.email, a.phone, a.guest_code, a.event_type, a.guest_type, a.guest_note, a.guest_extras, a.confirmation, a.photo, a.title, a.date_confirmed, a.submited
                       FROM guests as a 
                       WHERE a.guest_code='" . $guest_code . "'";
 

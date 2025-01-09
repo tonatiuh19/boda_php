@@ -30,11 +30,13 @@ if ($method == 'POST') {
         $email = $params['email'];
         $phone = $params['phone'];
         $confirmation = $params['valueConfirmation'] === 'yes' ? 1 : 0;
+        $date_confirmed = date('Y-m-d H:i:s');
+        $submitted = true;
 
         // Update guest details
-        $sql_update_guest = "UPDATE guests SET email = ?, phone = ?, confirmation = ? WHERE id_guest = ?";
+        $sql_update_guest = "UPDATE guests SET email = ?, phone = ?, confirmation = ?, date_confirmed = ?, submited = ? WHERE id_guest = ?";
         $stmt = $conn->prepare($sql_update_guest);
-        $stmt->bind_param("ssii", $email, $phone, $confirmation, $id_guest);
+        $stmt->bind_param("ssisii", $email, $phone, $confirmation, $date_confirmed, $submitted, $id_guest);
 
         if ($stmt->execute()) {
             // Fetch existing guest extras
@@ -67,7 +69,7 @@ if ($method == 'POST') {
             }
 
             // Fetch updated guest details
-            $sql_guest = "SELECT a.id_guest, a.full_name, a.email, a.phone, a.guest_code, a.event_type, a.guest_type, a.guest_note, a.guest_extras, a.confirmation, a.photo
+            $sql_guest = "SELECT a.id_guest, a.full_name, a.email, a.phone, a.guest_code, a.event_type, a.guest_type, a.guest_note, a.guest_extras, a.confirmation, a.photo, a.title, a.date_confirmed, a.submited
                           FROM guests as a 
                           WHERE a.id_guest='" . $id_guest . "'";
 
