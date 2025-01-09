@@ -1,0 +1,6 @@
+[08-Jan-2025 19:25:05 America/Mexico_City] PHP Warning:  Undefined array key 1 in /home3/alanchat/garbrix.com/boda/api/insertGuests.php on line 53
+[08-Jan-2025 19:25:05 America/Mexico_City] PHP Fatal error:  Uncaught mysqli_sql_exception: Column 'id_guest' cannot be null in /home3/alanchat/garbrix.com/boda/api/insertGuests.php:62
+Stack trace:
+#0 /home3/alanchat/garbrix.com/boda/api/insertGuests.php(62): mysqli_stmt->execute()
+#1 {main}
+  thrown in /home3/alanchat/garbrix.com/boda/api/insertGuests.php on line 62
