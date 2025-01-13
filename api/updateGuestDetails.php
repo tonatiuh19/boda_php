@@ -107,9 +107,28 @@ if ($method == 'POST') {
                     } else {
                         $guest_data['accommodations'] = [];
                     }
+
+                    $sql_gifts = "SELECT a.id_event_gifts, a.id_event, a.title, a.description, a.active 
+                              FROM event_gifts as a 
+                              WHERE a.active=1 AND a.id_event=?";
+                    $stmt_gifts = $conn->prepare($sql_gifts);
+                    $stmt_gifts->bind_param("i", $id_event);
+                    $stmt_gifts->execute();
+                    $result_gifts = $stmt_gifts->get_result();
+
+                    if ($result_gifts->num_rows > 0) {
+                        $gifts = [];
+                        while ($row = $result_gifts->fetch_assoc()) {
+                            $gifts[] = array_map('utf8_encode', $row);
+                        }
+                        $guest_data['gifts'] = $gifts;
+                    } else {
+                        $guest_data['gifts'] = [];
+                    }
                 } else {
                     $guest_data['event_details'] = null;
                     $guest_data['accommodations'] = [];
+                    $guest_data['gifts'] = [];
                 }
 
                 // Query to fetch guest extras
