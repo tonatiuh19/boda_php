@@ -29,13 +29,30 @@ if ($method == 'POST') {
         $guest_code = $params['guest_code'];
 
         // Main query to fetch guest details
-        $sql_guest = "SELECT a.id_guest, a.full_name, a.email, a.phone, a.guest_code, a.event_type, a.guest_type, a.guest_note, a.guest_extras, a.confirmation, a.photo, a.title, a.date_confirmed, a.submited
-                      FROM guests as a 
+        $sql_guest = "SELECT a.id_guest, a.full_name, a.email, a.phone, a.guest_code, a.event_type, a.guest_type, a.guest_note, a.guest_extras, a.confirmation, a.photo, a.title, a.date_confirmed, a.submited, b.table, b.chair
+                        FROM guests as a 
+                        INNER JOIN event_layout_tables as b on b.id_guest = a.id_guest
                       WHERE a.guest_code='" . $guest_code . "'";
 
         $result_guest = $conn->query($sql_guest);
         if ($result_guest->num_rows > 0) {
             $guest_data = $result_guest->fetch_assoc();
+
+            $id_guest = $guest_data['id_guest'];
+
+            // Insert data into sites_visitors table
+            $id_event = 1; // Example value, replace with actual data
+            $date = date('Y-m-d H:i:s'); // Current date and time
+            $section = 'invitation_section'; // Example value, replace with actual data
+
+            $sql_insert_site_visitor = "INSERT INTO sites_visitors (id_event, date, section, id_guest) VALUES (?, ?, ?, ?)";
+            $stmt_insert_site_visitor = $conn->prepare($sql_insert_site_visitor);
+            $stmt_insert_site_visitor->bind_param("issi", $id_event, $date, $section, $id_guest);
+
+            if (!$stmt_insert_site_visitor->execute()) {
+                echo json_encode(["message" => "Failed to insert site visitor", "error" => $stmt_insert_site_visitor->error]);
+                exit;
+            }
 
             // Subquery to fetch event details
             $sql_event = "SELECT a.id_event, a.event_address, a.event_date, c.label, b.place, b.google_link, b.address_line1, b.address_line2, b.city, b.state, b.postal_code, b.country, c.label 
@@ -93,8 +110,9 @@ if ($method == 'POST') {
             }
 
             // Query to fetch guest extras
-            $sql_guest_extras = "SELECT a.id_guest_extra, a.full_name, a.email, a.phone, a.confirmation 
-                                 FROM guests_extras as a 
+            $sql_guest_extras = "SELECT a.id_guest_extra, a.full_name, a.email, a.phone, a.confirmation, b.table, b.chair 
+                                FROM guests_extras as a 
+                                INNER JOIN event_layout_tables as b on b.id_guest = a.id_guest_extra
                                  WHERE a.id_guest=" . $guest_data['id_guest'];
 
             $result_guest_extras = $conn->query($sql_guest_extras);
